@@ -1,8 +1,9 @@
 orgname=OrdererOrg
-channel=sys-channel  #system-channel id.if you didn't created system channel then by default it gets created with testchainid name
+channel=mychannel  #system-channel id.if you didn't created system channel then by default it gets created with testchainid name
 port=7050
 domain=orderer.example.com
 
+export ORDERER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $domain)
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export CORE_PEER_TLS_CERT_FILE=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
@@ -11,12 +12,16 @@ export CORE_PEER_LOCALMSPID=OrdererMSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
 export CORE_PEER_MSPCONFIGPATH=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/users/Admin@example.com/msp
 export CORE_PEER_ADDRESS=$domain:$port
+
+echo $ORDERER_IP $domain | sudo tee -a /etc/hosts
+
 sudo apt install jq
 
 generateOrg3Config(){
         configtxgen -printOrg Org3MSP > org3.json
 }
 getConfig(){
+
         peer channel fetch config sys_config_block.pb -o $domain:$port  -c $channel --tls --cafile $ORDERER_CA
 
 }
@@ -39,15 +44,16 @@ convertConfigDeltaToJSON(){
 
         configtxlator proto_decode --input config_update.pb --type common.ConfigUpdate | jq . > config_update.json
           
-        echo '{"payload":{"header":{"channel_header":{"channel_id":"sys-channel", "type":2}},"data":{"config_update":'$(cat config_update.json)'}}}' | jq . > config_update_in_envelope.json
+        echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":'$(cat config_update.json)'}}}' | jq . > config_update_in_envelope.json
 
         configtxlator proto_encode --input config_update_in_envelope.json --type common.Envelope --output config_update_in_envelope.pb
 
 }
 
 updateSystemChannel(){
-        peer channel update -f config_update_in_envelope.pb -c $channel -o $domain:$port  --tls --cafile $ORDERER_CA 
+        peer channel update -f config_update_in_envelope.pb -c $channel -o $ORDERER_IP:$port --tls --cafile $ORDERER_CA 
 }
+
 
 export FABRIC_CFG_PATH=$PWD
 generateOrg3Config

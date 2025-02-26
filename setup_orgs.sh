@@ -36,8 +36,6 @@ echo -e "======Setting up Org1======\n"
 echo -e "\n======Setting up Org2======\n"
 (cd org2; ./1_enrollOrg2AdminAndUsers.sh; ./2_generateMSPOrg2.sh )
  
-# echo -e "\n======Setting up Org3======\n"
-# (cd org3; ./1_enrollOrg3AdminAndUsers.sh; ./2_generateMSPOrg3.sh )
 
 echo -e "\n======Setting up Orderer======\n"
 (cd orderer; ./1_enrollAdminAndMSP.sh; ./2_artifact.sh)
@@ -50,15 +48,17 @@ echo -e "\n======Creating Channel======\n"
 sleep 10
 
 echo -e "\n======Org 2 Joining Channel======\n"
-
 (cd org2; ./3_joinChannel.sh)
 
-# echo -e "\n======Org 3 Joining Channel======\n"
+echo -e "\n======Setting up Org3======\n"
+(cd org3; ./1_enrollOrg3AdminAndUsers.sh; ./2_generateMSPOrg3.sh )
+
+# (cd addOrgConsortium; ./addOrgToConsortium.sh )
 
 # (cd org3; ./3_joinChannel.sh)
 
-sleep 10
+# sleep 10
 
-echo -e "\n======Deploy Chaincode ======\n"
+# echo -e "\n======Deploy Chaincode ======\n"
 
-(cd deployChaincode; ./deployOrg1_GO.sh $1;./deployOrg2_GO.sh $1;)
+# (cd deployChaincode; ./deployOrg1_GO.sh $1;./deployOrg2_GO.sh $1;)
