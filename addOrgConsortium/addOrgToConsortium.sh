@@ -1,5 +1,5 @@
 orgname=OrdererOrg
-channel=mychannel  #system-channel id.if you didn't created system channel then by default it gets created with testchainid name
+channel=system-channel  #system-channel id.if you didn't created system channel then by default it gets created with testchainid name
 port=7050
 domain=orderer.example.com
 
@@ -44,14 +44,14 @@ convertConfigDeltaToJSON(){
 
         configtxlator proto_decode --input config_update.pb --type common.ConfigUpdate | jq . > config_update.json
           
-        echo '{"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update":'$(cat config_update.json)'}}}' | jq . > config_update_in_envelope.json
+        echo '{"payload":{"header":{"channel_header":{"channel_id":"system-channel", "type":2}},"data":{"config_update":'$(cat config_update.json)'}}}' | jq . > config_update_in_envelope.json
 
         configtxlator proto_encode --input config_update_in_envelope.json --type common.Envelope --output config_update_in_envelope.pb
 
 }
 
 updateSystemChannel(){
-        peer channel update -f config_update_in_envelope.pb -c $channel -o $ORDERER_IP:$port --tls --cafile $ORDERER_CA 
+        peer channel update -f config_update_in_envelope.pb -c $channel -o $domain:$port --tls --cafile $ORDERER_CA 
 }
 
 
