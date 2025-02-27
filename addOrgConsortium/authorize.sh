@@ -1,11 +1,12 @@
-export ORDERER_CA=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+export ORDERER_CA=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export CHANNEL_NAME=mychannel
 export ORDERER_ADDRESS=orderer.example.com:7050
-export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+export CORE_PEER_ADDRESS=localhost:7051
 export CORE_PEER_LOCALMSPID=Org1MSP
 export CORE_PEER_TLS_ENABLED=true
 export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/../org1/crypto-config-ca/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 export CORE_PEER_MSPCONFIGPATH=${PWD}/../org1/crypto-config-ca/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+export FABRIC_CFG_PATH=${PWD}/../config
 
 configtxgen -printOrg Org3MSP > org3.json
 
@@ -29,3 +30,15 @@ peer channel signconfigtx -f config_update_in_envelope.pb
 
 peer channel update -f config_update_in_envelope.pb -c $CHANNEL_NAME -o $ORDERER_ADDRESS --tls --cafile $ORDERER_CA
 
+
+export ORDERER_CA=${PWD}/../orderer/crypto-config-ca/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export CHANNEL_NAME=mychannel
+export ORDERER_ADDRESS=orderer.example.com:7050
+export CORE_PEER_ADDRESS=localhost:9051
+export CORE_PEER_LOCALMSPID=Org2MSP
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/../org2/crypto-config-ca/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/../org2/crypto-config-ca/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+export FABRIC_CFG_PATH=${PWD}/../config
+
+peer channel update -f config_update_in_envelope.pb -c $CHANNEL_NAME -o $ORDERER_ADDRESS --tls --cafile $ORDERER_CA

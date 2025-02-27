@@ -53,8 +53,8 @@ echo -e "\n======Org 2 Joining Channel======\n"
 echo -e "\n======Setting up Org3======\n"
 (cd org3; ./1_enrollOrg3AdminAndUsers.sh; ./2_generateMSPOrg3.sh )
 
-(cd addOrgConsortium; ./addOrgToConsortium.sh )
-(cd addOrgConsortium; ./authorize.sh )
+# (cd addOrgConsortium; ./addOrgToConsortium.sh )
+# (cd addOrgConsortium; ./authorize.sh )
 
 # (cd org3; ./3_joinChannel.sh)
 
